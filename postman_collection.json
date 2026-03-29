@@ -1,0 +1,200 @@
+{
+  "info": {
+    "name": "Academic Portal API",
+    "description": "Full REST API collection for the Academic Portal LMS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",      "value": "http://localhost:3000/api" },
+    { "key": "teacherToken", "value": "" },
+    { "key": "studentToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Teacher",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"full_name\":\"Dr. Jane Smith\",\"email\":\"teacher@test.com\",\"password\":\"Password123!\",\"role\":\"teacher\"}" }
+          }
+        },
+        {
+          "name": "Login Teacher",
+          "event": [{ "listen": "test", "script": { "exec": ["const json = pm.response.json();", "if(json.data?.token) pm.collectionVariables.set('teacherToken', json.data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\":\"teacher@demo.com\",\"password\":\"Password123!\"}" }
+          }
+        },
+        {
+          "name": "Login Student",
+          "event": [{ "listen": "test", "script": { "exec": ["const json = pm.response.json();", "if(json.data?.token) pm.collectionVariables.set('studentToken', json.data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\":\"student1@demo.com\",\"password\":\"Password123!\"}" }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/profile",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments – Teacher",
+      "item": [
+        {
+          "name": "Create Assignment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/assignments",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{teacherToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\":\"Test Assignment\",\"description\":\"This is a test assignment with enough description.\",\"subject\":\"Computer Science\",\"deadline\":\"2099-12-31T23:59:59.000Z\"}" }
+          }
+        },
+        {
+          "name": "Get All Assignments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        },
+        {
+          "name": "Get Teacher's Assignments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments/teacher/mine",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        },
+        {
+          "name": "Get Performance Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments/teacher/summary",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        },
+        {
+          "name": "Update Assignment",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/assignments/1",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{teacherToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\":\"Updated Title\",\"description\":\"Updated description text for this assignment.\",\"subject\":\"Databases\",\"deadline\":\"2099-12-31T23:59:59.000Z\"}" }
+          }
+        },
+        {
+          "name": "Get Submissions for Assignment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments/1/submissions",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        },
+        {
+          "name": "Delete Assignment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/assignments/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments – Student",
+      "item": [
+        {
+          "name": "Submit Assignment (file upload)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/assignments/1/submit",
+            "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "/path/to/your/submission.pdf" }] }
+          }
+        },
+        {
+          "name": "Get My Submissions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments/student/my-submissions",
+            "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }]
+          }
+        },
+        {
+          "name": "Get My Performance",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assignments/student/performance",
+            "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "item": [
+        {
+          "name": "Create Announcement",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/announcements",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{teacherToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\":\"Important Notice\",\"content\":\"This is an important announcement for all students in the course.\"}" }
+          }
+        },
+        {
+          "name": "Get All Announcements",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/announcements",
+            "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }]
+          }
+        },
+        {
+          "name": "Update Announcement",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/announcements/1",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{teacherToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\":\"Updated Notice\",\"content\":\"Updated content for this announcement.\"}" }
+          }
+        },
+        {
+          "name": "Delete Announcement",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/announcements/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{teacherToken}}" }]
+          }
+        }
+      ]
+    }
+  ]
+}
